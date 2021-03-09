@@ -44,27 +44,29 @@
 
 (defn- create-card [config item]
   (log/info "Creating card from item" item)
-  (let [{:keys [key token list-id estimate-field-id house->label-id]} config
-        card-res (http/post "https://api.trello.com/1/cards"
-                            {:content-type :json
-                             :accept :json
-                             :as :json
-                             :query-params {:key key
-                                            :token token
-                                            :name (:title item)
-                                            :desc (:url item)
-                                            :start (str (:date item) "T08:00:00.000Z")
-                                            :idList list-id
-                                            :pos "top"
-                                            :idLabels [(get house->label-id (:house item))]}})
+  (let [{:keys [key token list-id estimate-field-id house->label-id dry-run?]} config
+        card-res (when-not dry-run?
+                   (http/post "https://api.trello.com/1/cards"
+                              {:content-type :json
+                               :accept :json
+                               :as :json
+                               :query-params {:key key
+                                              :token token
+                                              :name (:title item)
+                                              :desc (:url item)
+                                              :start (str (:date item) "T08:00:00.000Z")
+                                              :idList list-id
+                                              :pos "top"
+                                              :idLabels [(get house->label-id (:house item))]}}))
         card-id (get-in card-res [:body :id])]
-    (http/put (str "https://api.trello.com/1/card/" card-id "/customField/" estimate-field-id "/item")
-              {:content-type :json
-               :accept :json
-               :as :json
-               :query-params {:key key
-                              :token token}
-               :form-params {:value {:number (str (:estimate item))}}})
+    (when-not dry-run?
+      (http/put (str "https://api.trello.com/1/card/" card-id "/customField/" estimate-field-id "/item")
+                {:content-type :json
+                 :accept :json
+                 :as :json
+                 :query-params {:key key
+                                :token token}
+                 :form-params {:value {:number (str (:estimate item))}}}))
     nil))
 
 (defn -main [& args]
@@ -74,7 +76,8 @@
                                 :list-id (env :trello-list-id)
                                 :estimate-field-id (env :trello-estimate-field-id)
                                 :house->label-id {:commons (env :trello-commons-label-id)
-                                                  :lords (env :trello-lords-label-id)}})
+                                                  :lords (env :trello-lords-label-id)}
+                                :dry-run? (Boolean/parseBoolean (env :dry-run))})
           (items date))))
 
 (comment
