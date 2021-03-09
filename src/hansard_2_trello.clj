@@ -89,8 +89,3 @@
                                                   :lords (env :trello-lords-label-id)}
                                 :dry-run? (Boolean/parseBoolean (env :dry-run))})
           (items date))))
-
-(comment
-  (hansard-item-urls (commons-url "2021-03-01"))
-  (hansard-item "https://hansard.parliament.uk/commons/2021-03-01/debates/a06314da-5d25-450d-ae52-0e27df20a45a/DraftMayoralAndPoliceAndCrimeCommissionerElections(CoronavirusNominationOfCandidates)(Amendment)Order2021DraftPoliceAndCrimeCommissionerElections(Wels")
-  (items "2021-03-01"))
