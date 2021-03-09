@@ -1,6 +1,7 @@
 (ns hansard-2-trello
   (:require [clj-http.client :as http]
             [clojure.string :as string]
+            [clojure.tools.logging.readable :as log]
             [environ.core :refer [env]]
             [net.cgrand.enlive-html :as html]))
 
@@ -42,6 +43,7 @@
                 (hansard-item-urls (lords-url date)))))
 
 (defn- create-card [config item]
+  (log/info "Creating card from item" item)
   (let [{:keys [key token list-id estimate-field-id house->label-id]} config
         card-res (http/post "https://api.trello.com/1/cards"
                             {:content-type :json
