@@ -54,6 +54,7 @@
 (defn- create-card [config item]
   (log/info "Creating card from item" item)
   (let [{:keys [key token list-id estimate-field-id house->label-id dry-run?]} config
+        desc (str (:url item) "\n\n" (string/join "\n" (:subheadings item)))
         card-res (when-not dry-run?
                    (http/post "https://api.trello.com/1/cards"
                               {:content-type :json
@@ -62,7 +63,7 @@
                                :query-params {:key key
                                               :token token
                                               :name (:title item)
-                                              :desc (:url item)
+                                              :desc desc
                                               :start (str (:date item) "T08:00:00.000Z")
                                               :idList list-id
                                               :pos "top"
