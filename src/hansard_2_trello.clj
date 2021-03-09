@@ -39,10 +39,13 @@
      :subheadings subheadings}))
 
 (defn- items [date]
-  (concat (pmap (comp (partial merge {:house :commons
-                                      :date date})
-                      hansard-item)
-                (hansard-item-urls (commons-url date)))
+  (concat (->> (pmap (comp (partial merge {:house :commons
+                                           :date date})
+                           hansard-item)
+                     (hansard-item-urls (commons-url date)))
+               (remove (fn [{:keys [breadcrumbs]}]
+                         (and (seq (filter #(= "Oral Answers to Questions" %) breadcrumbs))
+                              (not= "Oral Answers to Questions" (last breadcrumbs))))))
           (pmap (comp (partial merge {:house :lords
                                       :date date})
                       hansard-item)
