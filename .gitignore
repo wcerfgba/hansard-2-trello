@@ -1,4 +1,4 @@
-.lein-env
+*.lein-env
 .lsp/
 .calva/
 .cpcache/
