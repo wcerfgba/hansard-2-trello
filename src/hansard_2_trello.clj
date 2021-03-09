@@ -23,6 +23,10 @@
         title (-> (html/select page [:h1])
                   (first)
                   (html/text))
+        breadcrumbs (->> (html/select page [:.breadcrumb :li (html/but :.toggle)])
+                        (map html/text))
+        subheadings (->> (html/select page [:.block-page :h2])
+                        (map html/text))
         content (-> (html/select page [:.block-page])
                     (first)
                     (html/text))
@@ -30,7 +34,9 @@
         reading-time-estimate (inc (int (/ word-count 200)))]
     {:title title
      :estimate reading-time-estimate
-     :url url}))
+     :url url
+     :breadcrumbs breadcrumbs
+     :subheadings subheadings}))
 
 (defn- items [date]
   (concat (pmap (comp (partial merge {:house :commons
