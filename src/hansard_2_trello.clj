@@ -55,6 +55,7 @@
                                             :desc (:url item)
                                             :start (str (:date item) "T08:00:00.000Z")
                                             :idList list-id
+                                            :pos "top"
                                             :idLabels [(get house->label-id (:house item))]}})
         card-id (get-in card-res [:body :id])]
     (http/put (str "https://api.trello.com/1/card/" card-id "/customField/" estimate-field-id "/item")
